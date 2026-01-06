@@ -1,0 +1,12 @@
+{
+	"name": "ds_restapi_forecast_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_rest_Visual_Crossing",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
