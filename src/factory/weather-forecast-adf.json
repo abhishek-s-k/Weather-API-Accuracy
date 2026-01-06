@@ -1,0 +1,9 @@
+{
+	"name": "weather-forecast-adf",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "15e0fc5f-6ccb-40f1-b63c-4d76859c91ad",
+		"tenantId": "cfebf34b-950e-4936-aa76-38315125635f"
+	}
+}
