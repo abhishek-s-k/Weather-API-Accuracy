@@ -1,0 +1,24 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "weather-forecast-adf"
+		},
+		"LS_AzureDataLakeStorage_properties_typeProperties_url": {
+			"value": "@{linkedService().sa_url}"
+		},
+		"LS_Azure_KV_properties_typeProperties_baseUrl": {
+			"value": "@{linkedService().KV_BaseURL}"
+		},
+		"LS_rest_Visual_Crossing_properties_typeProperties_url": {
+			"value": "@{linkedService().BaseURL}"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
