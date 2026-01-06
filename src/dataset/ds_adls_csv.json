@@ -1,34 +1,16 @@
 {
-	"name": "ds_adls_forecast_json",
+	"name": "ds_adls_csv",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_AzureDataLakeStorage",
 			"type": "LinkedServiceReference",
 			"parameters": {
-				"sa_url": {
-					"value": "@dataset().sa_url",
-					"type": "Expression"
-				},
-				"kv_url": {
-					"value": "@dataset().kv_url",
-					"type": "Expression"
-				},
-				"storage_secret_name": {
-					"value": "@dataset().storage_secret",
-					"type": "Expression"
-				}
+				"sa_url": "https://weatherforecastdata.dfs.core.windows.net/",
+				"kv_url": "https://wfa-keyvault.vault.azure.net/",
+				"storage_secret_name": "weatherforecastdata-sa-key"
 			}
 		},
 		"parameters": {
-			"sa_url": {
-				"type": "string"
-			},
-			"kv_url": {
-				"type": "string"
-			},
-			"storage_secret": {
-				"type": "string"
-			},
 			"container": {
 				"type": "string"
 			},
@@ -40,7 +22,7 @@
 			}
 		},
 		"annotations": [],
-		"type": "Json",
+		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
@@ -56,8 +38,12 @@
 					"value": "@dataset().container",
 					"type": "Expression"
 				}
-			}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
 		},
-		"schema": {}
+		"schema": []
 	}
 }

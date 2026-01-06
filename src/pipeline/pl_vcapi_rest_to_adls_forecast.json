@@ -5,6 +5,8 @@
 			{
 				"name": "15_days_weather_forecast",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -38,17 +40,130 @@
 				"inputs": [
 					{
 						"referenceName": "ds_restapi_forecast_json",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"rest_base_url": {
+								"value": "@pipeline().parameters.restapi_base_url",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"outputs": [
 					{
 						"referenceName": "ds_adls_forecast_json",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"sa_url": {
+								"value": "@pipeline().parameters.sa_url",
+								"type": "Expression"
+							},
+							"kv_url": {
+								"value": "@pipeline().parameters.kv_url",
+								"type": "Expression"
+							},
+							"storage_secret": {
+								"value": "@pipeline().parameters.storage_secret_name",
+								"type": "Expression"
+							},
+							"container": {
+								"value": "@pipeline().parameters.landing_container",
+								"type": "Expression"
+							},
+							"directory": {
+								"value": "@pipeline().parameters.landing_directory",
+								"type": "Expression"
+							},
+							"file_name": {
+								"value": "@pipeline().parameters.landing_file_name",
+								"type": "Expression"
+							}
+						}
 					}
 				]
+			},
+			{
+				"name": "lookup_locations",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "ds_adls_csv",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": {
+								"value": "@pipeline().parameters.locations_container",
+								"type": "Expression"
+							},
+							"directory": {
+								"value": "@pipeline().parameters.locations_directory",
+								"type": "Expression"
+							},
+							"file_name": {
+								"value": "@pipeline().parameters.locations_file_name",
+								"type": "Expression"
+							}
+						}
+					},
+					"firstRowOnly": false
+				}
 			}
 		],
+		"parameters": {
+			"sa_url": {
+				"type": "string",
+				"defaultValue": "https://weatherforecastdata.dfs.core.windows.net/"
+			},
+			"kv_url": {
+				"type": "string",
+				"defaultValue": "https://wfa-keyvault.vault.azure.net/"
+			},
+			"storage_secret_name": {
+				"type": "string",
+				"defaultValue": "weatherforecastdata-sa-key"
+			},
+			"restapi_base_url": {
+				"type": "string",
+				"defaultValue": "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
+			},
+			"landing_container": {
+				"type": "string"
+			},
+			"landing_directory": {
+				"type": "string"
+			},
+			"landing_file_name": {
+				"type": "string"
+			},
+			"locations_container": {
+				"type": "string"
+			},
+			"locations_directory": {
+				"type": "string"
+			},
+			"locations_file_name": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }

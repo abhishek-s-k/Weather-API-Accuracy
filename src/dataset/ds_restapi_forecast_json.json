@@ -3,7 +3,18 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_rest_Visual_Crossing",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"BaseURL": {
+					"value": "@dataset().rest_base_url",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"rest_base_url": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "RestResource",
