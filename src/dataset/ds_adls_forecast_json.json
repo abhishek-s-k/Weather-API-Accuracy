@@ -1,0 +1,63 @@
+{
+	"name": "ds_adls_forecast_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_AzureDataLakeStorage",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"sa_url": {
+					"value": "@dataset().sa_url",
+					"type": "Expression"
+				},
+				"kv_url": {
+					"value": "@dataset().kv_url",
+					"type": "Expression"
+				},
+				"storage_secret_name": {
+					"value": "@dataset().storage_secret",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"sa_url": {
+				"type": "string"
+			},
+			"kv_url": {
+				"type": "string"
+			},
+			"storage_secret": {
+				"type": "string"
+			},
+			"container": {
+				"type": "string"
+			},
+			"directory": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().directory",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}
