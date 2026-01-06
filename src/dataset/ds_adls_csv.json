@@ -5,9 +5,18 @@
 			"referenceName": "LS_AzureDataLakeStorage",
 			"type": "LinkedServiceReference",
 			"parameters": {
-				"sa_url": "https://weatherforecastdata.dfs.core.windows.net/",
-				"kv_url": "https://wfa-keyvault.vault.azure.net/",
-				"storage_secret_name": "weatherforecastdata-sa-key"
+				"sa_url": {
+					"value": "@dataset().sa_url",
+					"type": "Expression"
+				},
+				"kv_url": {
+					"value": "@dataset().kv_url",
+					"type": "Expression"
+				},
+				"storage_secret_name": {
+					"value": "@dataset().secret_name",
+					"type": "Expression"
+				}
 			}
 		},
 		"parameters": {
@@ -18,6 +27,15 @@
 				"type": "string"
 			},
 			"file_name": {
+				"type": "string"
+			},
+			"sa_url": {
+				"type": "string"
+			},
+			"kv_url": {
+				"type": "string"
+			},
+			"secret_name": {
 				"type": "string"
 			}
 		},
