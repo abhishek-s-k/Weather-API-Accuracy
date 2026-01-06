@@ -154,7 +154,7 @@
 											"type": "Expression"
 										},
 										"file_name": {
-											"value": "@concat(item().Prop_0,'_forecast_',formatDateTime(utcNow(),'YYYY-MM-dd'),'.json')",
+											"value": "@concat(item().Prop_0,'_forecast_',formatDateTime(utcNow(),'yyyy-MM-dd'),'.json')",
 											"type": "Expression"
 										}
 									}
@@ -207,7 +207,8 @@
 				"defaultValue": "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
 			},
 			"landing_container": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "weather-forecast-landing"
 			},
 			"locations_container": {
 				"type": "string",
