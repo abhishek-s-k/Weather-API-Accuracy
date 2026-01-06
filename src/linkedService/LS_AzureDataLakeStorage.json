@@ -1,0 +1,41 @@
+{
+	"name": "LS_AzureDataLakeStorage",
+	"properties": {
+		"parameters": {
+			"sa_url": {
+				"type": "string",
+				"defaultValue": "https://weatherforecastdata.dfs.core.windows.net/"
+			},
+			"kv_url": {
+				"type": "string",
+				"defaultValue": "https://wfa-keyvault.vault.azure.net/"
+			},
+			"storage_secret_name": {
+				"type": "string",
+				"defaultValue": "weatherforecastdata-sa-key"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "@{linkedService().sa_url}",
+			"accountKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_Azure_KV",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"KV_BaseURL": {
+							"value": "@linkedService().kv_url",
+							"type": "Expression"
+						}
+					}
+				},
+				"secretName": {
+					"value": "@linkedService().storage_secret_name",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}
