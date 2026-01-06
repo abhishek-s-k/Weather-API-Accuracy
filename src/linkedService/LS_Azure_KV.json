@@ -1,0 +1,10 @@
+{
+	"name": "LS_Azure_KV",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://wfa-keyvault.vault.azure.net/"
+		}
+	}
+}
