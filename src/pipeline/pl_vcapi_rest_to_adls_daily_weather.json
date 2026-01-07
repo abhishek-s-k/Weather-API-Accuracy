@@ -84,7 +84,7 @@
 					},
 					"activities": [
 						{
-							"name": "copy_vcapi_adls_daily_weather_copy1",
+							"name": "copy_vcapi_adls_daily_weather",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
