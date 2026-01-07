@@ -118,7 +118,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "ds_restapi_forecast_json",
+									"referenceName": "ds_restapi_json",
 									"type": "DatasetReference",
 									"parameters": {
 										"rest_base_url": {
@@ -130,7 +130,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "ds_adls_forecast_json",
+									"referenceName": "ds_adls_json",
 									"type": "DatasetReference",
 									"parameters": {
 										"sa_url": {
