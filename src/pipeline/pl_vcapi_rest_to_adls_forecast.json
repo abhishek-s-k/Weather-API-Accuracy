@@ -150,7 +150,7 @@
 											"type": "Expression"
 										},
 										"directory": {
-											"value": "@item().Prop_0",
+											"value": "@concat(pipeline().parameters.landing_forecast_directory,'/',item().Prop_0)",
 											"type": "Expression"
 										},
 										"file_name": {
@@ -208,7 +208,7 @@
 			},
 			"landing_container": {
 				"type": "string",
-				"defaultValue": "weather-forecast-landing"
+				"defaultValue": "data-landing"
 			},
 			"locations_container": {
 				"type": "string",
@@ -225,6 +225,10 @@
 			"api_key_secret": {
 				"type": "string",
 				"defaultValue": "visualcrossing-key"
+			},
+			"landing_forecast_directory": {
+				"type": "string",
+				"defaultValue": "weather-forecast-landing"
 			}
 		},
 		"variables": {
