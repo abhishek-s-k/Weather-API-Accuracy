@@ -122,7 +122,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"rest_base_url": {
-											"value": "@concat(pipeline().parameters.vcapi_base_url,item().Prop_0,'?unitGroup=metric&key=',activity('get_api_key').output.value)",
+											"value": "@concat(pipeline().parameters.vcapi_base_url,item().Prop_0,'/',formatDateTime(utcNow(),'yyyy-MM-dd'),'?unitGroup=metric&key=',activity('get_api_key').output.value)",
 											"type": "Expression"
 										}
 									}
