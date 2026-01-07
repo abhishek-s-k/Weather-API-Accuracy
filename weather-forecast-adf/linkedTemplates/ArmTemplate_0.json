@@ -284,84 +284,6 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "copy_vcapi_adls_daily_weather",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"supportRFC5988": "true"
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_restapi_json",
-								"type": "DatasetReference",
-								"parameters": {
-									"rest_base_url": {
-										"value": "@pipeline().parameters.vcapi_base_url",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_adls_json",
-								"type": "DatasetReference",
-								"parameters": {
-									"sa_url": {
-										"value": "@pipeline().parameters.sa_url",
-										"type": "Expression"
-									},
-									"kv_url": {
-										"value": "@pipeline().parameters.kv_url",
-										"type": "Expression"
-									},
-									"storage_secret": {
-										"value": "@pipeline().parameters.storage_secret_name",
-										"type": "Expression"
-									},
-									"container": {
-										"value": "@pipeline().parameters.landing_container",
-										"type": "Expression"
-									},
-									"directory": {
-										"value": "@pipeline().parameters.landing_directory_daily_weather",
-										"type": "Expression"
-									},
-									"file_name": {
-										"value": "'placeholder'",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
 						"name": "lookup_locations_daily_weather",
 						"type": "Lookup",
 						"dependsOn": [],
@@ -417,6 +339,136 @@
 							},
 							"firstRowOnly": false
 						}
+					},
+					{
+						"name": "ForEach_location",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "lookup_locations_daily_weather",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "get_api_key",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('lookup_locations_daily_weather').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "copy_vcapi_adls_daily_weather",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET",
+											"paginationRules": {
+												"supportRFC5988": "true"
+											}
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_restapi_json",
+											"type": "DatasetReference",
+											"parameters": {
+												"rest_base_url": {
+													"value": "@concat(pipeline().parameters.vcapi_base_url,item().Prop_0,'/',formatDateTime(utcNow(),'yyyy-MM-dd'),'?unitGroup=metric&key=',activity('get_api_key').output.value)",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_adls_json",
+											"type": "DatasetReference",
+											"parameters": {
+												"sa_url": {
+													"value": "@pipeline().parameters.sa_url",
+													"type": "Expression"
+												},
+												"kv_url": {
+													"value": "@pipeline().parameters.kv_url",
+													"type": "Expression"
+												},
+												"storage_secret": {
+													"value": "@pipeline().parameters.storage_secret_name",
+													"type": "Expression"
+												},
+												"container": {
+													"value": "@pipeline().parameters.landing_container",
+													"type": "Expression"
+												},
+												"directory": {
+													"value": "@concat(pipeline().parameters.landing_directory_daily_weather,'/',item().Prop_0)",
+													"type": "Expression"
+												},
+												"file_name": {
+													"value": "@concat(item().Prop_0,'_daily_weather_',formatDateTime(utcNow(),'yyyy-MM-dd'))",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					},
+					{
+						"name": "get_api_key",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "GET",
+							"headers": {},
+							"url": {
+								"value": "@concat(pipeline().parameters.kv_url,'/secrets/',pipeline().parameters.vcapi_key_secret_name,'?api-version=7.5')",
+								"type": "Expression"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -458,14 +510,22 @@
 					"location_file_name": {
 						"type": "string",
 						"defaultValue": "locations_list.csv"
+					},
+					"vcapi_key_secret_name": {
+						"type": "string",
+						"defaultValue": "visualcrossing-key"
+					},
+					"jobid": {
+						"type": "string",
+						"defaultValue": "101649598241551"
 					}
 				},
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_adls_csv')]",
 				"[concat(variables('factoryId'), '/datasets/ds_restapi_json')]",
-				"[concat(variables('factoryId'), '/datasets/ds_adls_json')]",
-				"[concat(variables('factoryId'), '/datasets/ds_adls_csv')]"
+				"[concat(variables('factoryId'), '/datasets/ds_adls_json')]"
 			]
 		},
 		{
