@@ -229,6 +229,10 @@
 			"vcapi_key_secret_name": {
 				"type": "string",
 				"defaultValue": "visualcrossing-key"
+			},
+			"jobid": {
+				"type": "string",
+				"defaultValue": "101649598241551"
 			}
 		},
 		"annotations": []
