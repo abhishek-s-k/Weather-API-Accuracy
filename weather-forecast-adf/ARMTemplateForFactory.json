@@ -25,6 +25,197 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_vcapi_rest_to_adls_daily_weather')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_vcapi_adls_daily_weather",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"supportRFC5988": "true"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_restapi_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"rest_base_url": {
+										"value": "@pipeline().parameters.vcapi_base_url",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_json",
+								"type": "DatasetReference",
+								"parameters": {
+									"sa_url": {
+										"value": "@pipeline().parameters.sa_url",
+										"type": "Expression"
+									},
+									"kv_url": {
+										"value": "@pipeline().parameters.kv_url",
+										"type": "Expression"
+									},
+									"storage_secret": {
+										"value": "@pipeline().parameters.storage_secret_name",
+										"type": "Expression"
+									},
+									"container": {
+										"value": "@pipeline().parameters.landing_container",
+										"type": "Expression"
+									},
+									"directory": {
+										"value": "@pipeline().parameters.landing_directory_daily_weather",
+										"type": "Expression"
+									},
+									"file_name": {
+										"value": "'placeholder'",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "lookup_locations_daily_weather",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "ds_adls_csv",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": {
+										"value": "@pipeline().parameters.location_container",
+										"type": "Expression"
+									},
+									"directory": {
+										"value": "@pipeline().parameters.location_directory",
+										"type": "Expression"
+									},
+									"file_name": {
+										"value": "@pipeline().parameters.location_file_name",
+										"type": "Expression"
+									},
+									"sa_url": {
+										"value": "@pipeline().parameters.sa_url",
+										"type": "Expression"
+									},
+									"kv_url": {
+										"value": "@pipeline().parameters.kv_url",
+										"type": "Expression"
+									},
+									"secret_name": {
+										"value": "@pipeline().parameters.storage_secret_name",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"vcapi_base_url": {
+						"type": "string",
+						"defaultValue": "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
+					},
+					"sa_url": {
+						"type": "string",
+						"defaultValue": "https://weatherforecastdata.dfs.core.windows.net/"
+					},
+					"kv_url": {
+						"type": "string",
+						"defaultValue": "https://wfa-keyvault.vault.azure.net/"
+					},
+					"storage_secret_name": {
+						"type": "string",
+						"defaultValue": "weatherforecastdata-sa-key"
+					},
+					"landing_container": {
+						"type": "string",
+						"defaultValue": "data-landing"
+					},
+					"landing_directory_daily_weather": {
+						"type": "string",
+						"defaultValue": "daily-data-landing"
+					},
+					"location_directory": {
+						"type": "string",
+						"defaultValue": "locations"
+					},
+					"location_container": {
+						"type": "string",
+						"defaultValue": "metadata-logs"
+					},
+					"location_file_name": {
+						"type": "string",
+						"defaultValue": "locations_list.csv"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_restapi_json')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_json')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_csv')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_vcapi_rest_to_adls_forecast')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -146,7 +337,7 @@
 									},
 									"inputs": [
 										{
-											"referenceName": "ds_restapi_forecast_json",
+											"referenceName": "ds_restapi_json",
 											"type": "DatasetReference",
 											"parameters": {
 												"rest_base_url": {
@@ -158,7 +349,7 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "ds_adls_forecast_json",
+											"referenceName": "ds_adls_json",
 											"type": "DatasetReference",
 											"parameters": {
 												"sa_url": {
@@ -178,7 +369,7 @@
 													"type": "Expression"
 												},
 												"directory": {
-													"value": "@item().Prop_0",
+													"value": "@concat(pipeline().parameters.landing_forecast_directory,'/',item().Prop_0)",
 													"type": "Expression"
 												},
 												"file_name": {
@@ -240,7 +431,7 @@
 					},
 					"landing_container": {
 						"type": "string",
-						"defaultValue": "weather-forecast-landing"
+						"defaultValue": "data-landing"
 					},
 					"locations_container": {
 						"type": "string",
@@ -257,6 +448,10 @@
 					"api_key_secret": {
 						"type": "string",
 						"defaultValue": "visualcrossing-key"
+					},
+					"landing_forecast_directory": {
+						"type": "string",
+						"defaultValue": "weather-forecast-landing"
 					}
 				},
 				"variables": {
@@ -268,8 +463,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_adls_csv')]",
-				"[concat(variables('factoryId'), '/datasets/ds_restapi_forecast_json')]",
-				"[concat(variables('factoryId'), '/datasets/ds_adls_forecast_json')]"
+				"[concat(variables('factoryId'), '/datasets/ds_restapi_json')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_json')]"
 			]
 		},
 		{
@@ -345,7 +540,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_adls_forecast_json')]",
+			"name": "[concat(parameters('factoryName'), '/ds_adls_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -413,7 +608,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_restapi_forecast_json')]",
+			"name": "[concat(parameters('factoryName'), '/ds_restapi_json')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
