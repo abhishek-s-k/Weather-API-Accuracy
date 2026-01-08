@@ -9,8 +9,7 @@
 				"type": "string"
 			},
 			"storage_secret_name": {
-				"type": "string",
-				"defaultValue": "-sa-key"
+				"type": "string"
 			}
 		},
 		"annotations": [],
