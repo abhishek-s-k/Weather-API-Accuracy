@@ -3,16 +3,13 @@
 	"properties": {
 		"parameters": {
 			"sa_url": {
-				"type": "string",
-				"defaultValue": "https://weatherforecastdata.dfs.core.windows.net/"
+				"type": "string"
 			},
 			"kv_url": {
-				"type": "string",
-				"defaultValue": "https://wfa-keyvault.vault.azure.net/"
+				"type": "string"
 			},
 			"storage_secret_name": {
-				"type": "string",
-				"defaultValue": "weatherforecastdata-sa-key"
+				"type": "string"
 			}
 		},
 		"annotations": [],
